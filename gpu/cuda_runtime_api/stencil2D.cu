@@ -1,7 +1,6 @@
 //#define DOUBLE_PRECISION
 #ifdef DOUBLE_PRECISION
 // use this for double precision
-//#pragma OPENCL EXTENSION cl_khr_fp64 : enable
 typedef double real_t;
 #else
 typedef float real_t;

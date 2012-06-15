@@ -29,9 +29,6 @@
 #include <ctime>
 #include <cmath>
 
-/// Not supported for CUDA yet, since it's not possible to pass #defines
-/// to the compiler at run-time: need to find a way to support single and
-/// double precision without using different kernels
 #ifdef DOUBLE_PRECISION
 typedef double real_t;
 #else

@@ -1,4 +1,3 @@
-// this file is compiled with nvcc and won't pickup the definitions passed to gcc/vc++
 //#define DOUBLE_PRECISION
 
 //always defined to avoid dangling references
