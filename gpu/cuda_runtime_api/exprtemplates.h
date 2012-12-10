@@ -106,7 +106,7 @@ struct CosFun
 
 
 //==============================================================================
-// EXPRESSIONS, problem assign expression requires way of extracting reference
+// EXPRESSIONS, assign expression requires way of extracting reference
 //              to location to store result
 //==============================================================================
 

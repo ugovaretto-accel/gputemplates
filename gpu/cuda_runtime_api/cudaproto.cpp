@@ -28,6 +28,7 @@
 #include <cuda_runtime.h>
 #include <ctime>
 #include <cmath>
+#include "Timer.h"
 
 #ifdef DOUBLE_PRECISION
 typedef double real_t;
@@ -109,6 +110,8 @@ double halo_filter_trivial( const real_t* dom,
                             unsigned nc
                            )
 {
+    Timer timer;
+    timer.Start();
     assert( dom );
     assert( dom2 );
     assert( stencil );
@@ -141,7 +144,7 @@ double halo_filter_trivial( const real_t* dom,
             dom2[ r * nc  + c ] = sum;
         }
     }
-	return 0.;
+    return timer.Stop();
 }
 
 //----------------------------------------------------------------------------
@@ -155,7 +158,7 @@ double halo_filter_trivial( const real_t* dom,
                                 );
 
 //-----------------------------------------------------------------------------
-// CUDA has to be properly initialed before calling this function
+// CUDA has to be properly initialized before calling this function
 double halo_filter_cuda( const real_t* dom, 
                          real_t* dom2,
                          const real_t* stencil, 
@@ -225,15 +228,18 @@ double halo_filter_cuda( const real_t* dom,
     dim3 blocks( ec.columns / workGroupSize[ 0 ], ec.rows / workGroupSize[ 1 ] );
     dim3 threadsPerBlock( workGroupSize[ 0 ], workGroupSize[ 1 ] );
 
+    Timer timer;
+    timer.Start();
     // note that when calling a kernel type information is completely lost! CUdeviceptrs are converted
     // automatically to the parameters accepted by the kernel without any check!!!!
     RunStencil2D(blocks, threadsPerBlock, ec.domCL, ec.dom2CL, ec.rows, ec.columns, ec.stencilCL );
     cudaThreadSynchronize();
+    const double elapsed = timer.Stop();
    
     //READ BACK RESULTS
     status = cudaMemcpy( reinterpret_cast< void* >( dom2 ), reinterpret_cast< const void* >( ec.dom2CL ), DOMAIN_SIZE, cudaMemcpyDeviceToHost );
     if( status != cudaSuccess ) throw std::runtime_error( "ERROR - cudaMemcpy()" );
-    return 0.;    
+    return elapsed;    
 }
 
 //------------------------------------------------------------------------------
@@ -280,8 +286,6 @@ void set_dom_val( real_t* dom, real_t* dom2, unsigned nr, unsigned nc )
 int main( int argc, char** argv )
 {
 
-//TimingTest();
-//return 0;
 
     const std::string DEF_PLATFORM_TYPE( "cpu" );
     const unsigned DEF_PROBLEM_SIZE = 16;
